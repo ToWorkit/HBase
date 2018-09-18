@@ -1,10 +1,7 @@
 package com.test;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -139,6 +136,7 @@ public class equalsTables {
      * @param tableName
      * @param rowKeys
      * @throws IOException
+     * Delete -> 封装待删除的数据
      */
     public static void deleteMultiRow(String tableName, String... rowKeys) throws IOException {
         // 建立连接(resource中的配置文件)
@@ -154,14 +152,71 @@ public class equalsTables {
         table.close();
     }
 
+    /**
+     * 查询数据
+     * @param tableName
+     * @throws IOException
+     * Scan -> 扫描表的配置信息
+     * ResultScanner -> 通过配置的扫描器，得到一个扫描表的实例扫描器
+     * Result -> 每一个该类型的实例化对象，都对应了一个rowkey中的若干数据
+     * Cell -> 用于封装一个rowkey下面所有单元格中的数据(rowkey, cf, cn, value)
+     */
+    public static void getAllRows(String tableName) throws IOException {
+        // 建立连接(resource中的配置文件)
+        Connection connection = ConnectionFactory.createConnection(conf);
+        // 指定表
+        Table table = connection.getTable(TableName.valueOf(tableName));
+
+        Scan scan = new Scan();
+        ResultScanner scanner = table.getScanner(scan);
+        for (Result result : scanner) {
+            System.out.println(Bytes.toString(result.getRow()));
+            Cell[] cells = result.rawCells();
+/*            for (Cell cell : cells) {
+                System.out.println("行键 " + Bytes.toString(CellUtil.cloneRow(cell)));
+                System.out.println("列族 " + Bytes.toString(CellUtil.cloneFamily(cell)));
+                System.out.println("列 " + Bytes.toString(CellUtil.cloneQualifier(cell)));
+                System.out.println("值 " + Bytes.toString(CellUtil.cloneValue(cell)));
+            }*/
+        }
+    }
+
+    /**
+     * 获取指定的数据
+     * @param tableName
+     * @param rowKey
+     * @throws IOException
+     */
+    public static void getRow(String tableName, String rowKey) throws IOException {
+        // 建立连接(resource中的配置文件)
+        Connection connection = ConnectionFactory.createConnection(conf);
+        // 指定表
+        Table table = connection.getTable(TableName.valueOf(tableName));
+
+        Get get = new Get(Bytes.toBytes(rowKey));
+        // 列族，列名
+        get.addColumn(Bytes.toBytes("info"), Bytes.toBytes("name"));
+
+        Result result = table.get(get);
+        Cell[] cells = result.rawCells();
+        for (Cell cell : cells) {
+            System.out.println("行键 " + Bytes.toString(CellUtil.cloneRow(cell)));
+            System.out.println("列族 " + Bytes.toString(CellUtil.cloneFamily(cell)));
+            System.out.println("列 " + Bytes.toString(CellUtil.cloneQualifier(cell)));
+            System.out.println("值 " + Bytes.toString(CellUtil.cloneValue(cell)));
+        }
+    }
+
     public static void main(String[] args) throws IOException {
 //        System.out.println(isExist("student"));
 //        createTable("test", "info", "info01");
 //        deleteTable("test");
-/*        addRow("student", "101", "info", "name", "pl");
-        addRow("student", "102", "info", "name", "lp");
-        addRow("student", "103", "info", "name", "pl");*/
+//        addRow("student", "101", "info", "name", "pl");
+//        addRow("student", "102", "info", "name", "lp");
+//        addRow("student", "103", "info", "name", "pl");
 //        deleteRow("student", "101", "info");
-        deleteMultiRow("student", "101", "103");
+//        deleteMultiRow("student", "101", "103");
+//        getAllRows("student");
+        getRow("student", "101");
     }
 }
