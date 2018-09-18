@@ -20,23 +20,29 @@ public class Weibo {
 //        init();
 
         // 关注
-        WeiBoUtil.addAttends("1001", "1002", "1003");
+//        WeiBoUtil.addAttends("1001", "1002", "1003");
 
         // 被关注的人发微博(多个人发布微博)
-        WeiBoUtil.putData(Contents.CONTENT_TABLE, "1001", "info", "content", "九月十九号 1001");
+/*        WeiBoUtil.putData(Contents.CONTENT_TABLE, "1001", "info", "content", "九月十九号 1001");
         WeiBoUtil.putData(Contents.CONTENT_TABLE, "1002", "info", "content", "Hello World 1002");
         WeiBoUtil.putData(Contents.CONTENT_TABLE, "1002", "info", "content", "测试内容 1002");
-        WeiBoUtil.putData(Contents.CONTENT_TABLE, "1003", "info", "content", "五点十四分 1003");
+        WeiBoUtil.putData(Contents.CONTENT_TABLE, "1003", "info", "content", "五点十四分 1003");*/
 
         // 获取关注人的微博
         WeiBoUtil.getWeibo("1001");
 
         // 关注已经发过微博的人
+//        WeiBoUtil.addAttends("1002", "1001");
 
         // 获取关注人的微博
+//        WeiBoUtil.getWeibo("1002");
 
         // 取消关注
+        WeiBoUtil.deleteRelation("1001", "1002");
+
+        System.out.println("-----");
 
         // 取消关注人的微博
+        WeiBoUtil.getWeibo("1001");
     }
 }
