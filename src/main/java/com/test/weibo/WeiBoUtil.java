@@ -158,8 +158,9 @@ public class WeiBoUtil {
         Table connectionTable = connection.getTable(TableName.valueOf(Contents.CONTENT_TABLE));
         Put inboxPut = new Put(Bytes.toBytes(uid));
 
+        // 循环添加数据
         for (String attend : attends) {
-            // startRow和stopRow 第一种方式
+            // 通过startRow和stopRow构建扫描器 第一种方式
 //            Scan scan = new Scan(Bytes.toBytes(attend), Bytes.toBytes(attend + "|"));
 
             // 通过过滤器构建扫描器
@@ -167,15 +168,18 @@ public class WeiBoUtil {
             RowFilter rowFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new SubstringComparator(attend + "_"));
             scan.setFilter(rowFilter);
 
-            // 获取所有符合
+            // 获取所有符合扫描规则的数据
             ResultScanner scanner = connectionTable.getScanner(scan);
+
+            // 循环遍历取出每条数据的rowKey添加到inboxPut中
             for (Result result : scanner) {
                 byte[] row = result.getRow();
                 inboxPut.addColumn(Bytes.toBytes("info"), Bytes.toBytes(attend), row);
+                // 往收件箱表中给操作者添加数据
+                inboxTable1.put(inboxPut);
             }
         }
 
-        inboxTable1.put(inboxPut);
 
 
         table.close();
@@ -248,7 +252,7 @@ public class WeiBoUtil {
             Get contentGet = new Get(contentRowKey);
             Result contentResult = contentTable.get(contentGet);
             for (Cell cell1 : contentResult.rawCells()) {
-                String uid_ts = Bytes.toString(CellUtil.cloneRow(cell));
+                String uid_ts = Bytes.toString(CellUtil.cloneRow(cell1));
                 String id = uid_ts.split("_")[0];
                 String ts = uid_ts.split("_")[1];
 
