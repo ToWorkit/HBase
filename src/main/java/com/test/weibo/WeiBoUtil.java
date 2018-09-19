@@ -167,7 +167,6 @@ public class WeiBoUtil {
             Scan scan = new Scan();
             RowFilter rowFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new SubstringComparator(attend + "_"));
             scan.setFilter(rowFilter);
-
             // 获取所有符合扫描规则的数据
             ResultScanner scanner = connectionTable.getScanner(scan);
 
