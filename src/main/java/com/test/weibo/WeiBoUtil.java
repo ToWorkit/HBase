@@ -13,10 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * 为什么重复代码没有抽取
- *  因为业务线基本上只会使用一次或者几次，并不会大量的重复使用，所以用完就关闭
- */
 public class WeiBoUtil {
     // 获取 HBase 配置信息
     static Configuration configuration = HBaseConfiguration.create();
